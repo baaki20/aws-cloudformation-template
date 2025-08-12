@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IAM Lab - Automated IAM Users, Groups, and Secrets
+
+Resources:
+
+  # Store one-time password in Secrets Manager
+  IAMInitialPasswordSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: IAMInitialPassword
+      Description: One-time password for new IAM users
+      GenerateSecretString:
+        SecretStringTemplate: '{"username":"shared"}'
+        GenerateStringKey: password
+        PasswordLength: 12
+        ExcludeCharacters: '"@/\'
+
+  # S3 Read-Only Group
+  S3ReadOnlyGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: S3ReadOnlyGroup
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+  # EC2 Read-Only Group
+  EC2ReadOnlyGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: EC2ReadOnlyGroup
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+
+  # S3 User
+  S3User:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: s3-user
+      Groups:
+        - !Ref S3ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub '{{resolve:secretsmanager:${IAMInitialPasswordSecret}::password}}'
+        PasswordResetRequired: true
+
+  # EC2 User
+  EC2User:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: ec2-user
+      Groups:
+        - !Ref EC2ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub '{{resolve:secretsmanager:${IAMInitialPasswordSecret}::password}}'
+        PasswordResetRequired: true
+
+Outputs:
+  S3UserName:
+    Value: !Ref S3User
+    Description: The S3 user name
+  EC2UserName:
+    Value: !Ref EC2User
+    Description: The EC2 user name
+  SharedPasswordSecret:
+    Value: !Ref IAMInitialPasswordSecret
+    Description: Name of the secret storing the shared password
