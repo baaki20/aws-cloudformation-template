@@ -33,31 +33,29 @@ Resources:
 
   # S3 User
   S3User:
-  Type: AWS::IAM::User
-  Properties:
-    UserName: s3-user
-    Groups:
-      - !Ref S3ReadOnlyGroup
-    LoginProfile:
-      Password:
-        !Sub
+    Type: AWS::IAM::User
+    Properties:
+      UserName: s3-user
+      Groups:
+        - !Ref S3ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
           - { SecretArn: !Ref IAMInitialPasswordSecret }
-      PasswordResetRequired: true
+        PasswordResetRequired: true
 
   # EC2 User
   EC2User:
-  Type: AWS::IAM::User
-  Properties:
-    UserName: ec2-user
-    Groups:
-      - !Ref EC2ReadOnlyGroup
-    LoginProfile:
-      Password:
-        !Sub
+    Type: AWS::IAM::User
+    Properties:
+      UserName: ec2-user
+      Groups:
+        - !Ref EC2ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
           - { SecretArn: !Ref IAMInitialPasswordSecret }
-      PasswordResetRequired: true
+        PasswordResetRequired: true
       
 Outputs:
   S3UserName:
