@@ -57,6 +57,18 @@ Resources:
           - { SecretArn: !Ref IAMInitialPasswordSecret }
         PasswordResetRequired: true
       
+  Abdul_Baaki:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: abdul_baaki
+      Groups:
+        - !Ref EC2ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub
+          - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
+          - { SecretArn: !Ref IAMInitialPasswordSecret }
+        PasswordResetRequired: true
+
 Outputs:
   S3UserName:
     Value: !Ref S3User
