@@ -56,7 +56,21 @@ Resources:
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
           - { SecretArn: !Ref IAMInitialPasswordSecret }
         PasswordResetRequired: true
-      
+  
+  # New User
+  NewUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: new-user
+      Groups:
+        - !Ref S3ReadOnlyGroup
+        - !Ref EC2ReadOnlyGroup
+      LoginProfile:
+        Password: !Sub
+          - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
+          - { SecretArn: !Ref IAMInitialPasswordSecret }
+        PasswordResetRequired: true
+
 Outputs:
   S3UserName:
     Value: !Ref S3User
@@ -67,3 +81,7 @@ Outputs:
   SharedPasswordSecret:
     Value: !Ref IAMInitialPasswordSecret
     Description: Name of the secret storing the shared password
+
+  NewUserName:
+      Value: !Ref NewUser
+      Description: The new user name
