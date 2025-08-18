@@ -57,10 +57,10 @@ Resources:
           - { SecretArn: !Ref IAMInitialPasswordSecret }
         PasswordResetRequired: true
       
-  Abdul_BaakiUser:
+  AbdulBaakiUser:
     Type: AWS::IAM::User
     Properties:
-      UserName: abdul_baaki-user
+      UserName: abdulbaaki-user
       Groups:
         - !Ref EC2ReadOnlyGroup
       LoginProfile:
