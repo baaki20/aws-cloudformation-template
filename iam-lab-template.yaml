@@ -60,7 +60,7 @@ Resources:
   AbdulBaakiUser:
     Type: AWS::IAM::User
     Properties:
-      UserName: abdulbaaki-user
+      UserName: abdul_baaki-user
       Groups:
         - !Ref EC2ReadOnlyGroup
       LoginProfile:
@@ -68,6 +68,18 @@ Resources:
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
           - { SecretArn: !Ref IAMInitialPasswordSecret }
         PasswordResetRequired: true
+
+  AbdulTuesdayUser:
+      Type: AWS::IAM::User
+      Properties:
+        UserName: abdultuesday-user
+        Groups:
+          - !Ref EC2ReadOnlyGroup
+        LoginProfile:
+          Password: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:password}}'
+            - { SecretArn: !Ref IAMInitialPasswordSecret }
+          PasswordResetRequired: true
 
 Outputs:
   S3UserName:
